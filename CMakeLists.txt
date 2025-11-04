@@ -13,6 +13,7 @@ set(SIMD_FLAGS -march=armv8)
 
 # Add subdirectories
 add_subdirectory(src)
+add_subdirectory(bench)
 
 enable_testing()
 add_subdirectory(test)

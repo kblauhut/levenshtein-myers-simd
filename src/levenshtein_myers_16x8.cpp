@@ -1,12 +1,13 @@
 #include "levenshtein_myers.hpp"
 #include <arm_neon.h>
 
-#define ALPHABET_LEN 26
-
 static const uint16x8_t NULL_V_16 = vdupq_n_u16(0);
 static const uint16x8_t ONE_V_16 = vdupq_n_u16(1);
 
 std::array<uint16_t, 8> levenshtein_myers_16x8(const Myers16x8Input &input) {
+  if (input.q_wrd_len == 0)
+    return std::to_array(input.d_wrd_lens);
+
   uint16_t bm[ALPHABET_LEN] = {0}; // Bitmap for each letter in the alphabet
 
   const char *q_wrd = input.q_wrd;

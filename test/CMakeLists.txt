@@ -15,6 +15,9 @@ include(GoogleTest)
 # Create test executable
 add_executable(levenshtein_tests
     test_levenshtein_myers_16x8.cpp
+    test_levenshtein_myers_32x4.cpp
+    test_levenshtein_myers_64x2.cpp
+    fuzz_levenshtein_myers.cpp
 )
 
 target_link_libraries(levenshtein_tests

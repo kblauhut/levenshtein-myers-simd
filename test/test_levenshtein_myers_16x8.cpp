@@ -2,7 +2,7 @@
 #include <gmock/gmock.h>
 #include <levenshtein_myers.hpp>
 
-TEST(LevenshteinMyersTest, IdenticalStrings) {
+TEST(LevenshteinMyers16x8Test, IdenticalStrings) {
   auto input = Myers16x8Input{.q_wrd = "hello",
                               .q_wrd_len = 5,
                               .d_wrds = {"hello", "hello", "hello", "hello",
@@ -13,7 +13,7 @@ TEST(LevenshteinMyersTest, IdenticalStrings) {
   EXPECT_EQ(result, expected);
 }
 
-TEST(LevenshteinMyersTest, SingleCharDifference) {
+TEST(LevenshteinMyers16x8Test, SingleCharDifference) {
   auto input = Myers16x8Input{.q_wrd = "hello",
                               .q_wrd_len = 5,
                               .d_wrds = {"hella", "helko", "hxllo", "aello",
@@ -24,7 +24,7 @@ TEST(LevenshteinMyersTest, SingleCharDifference) {
   EXPECT_EQ(result, expected);
 }
 
-TEST(LevenshteinMyersTest, InsertionOperations) {
+TEST(LevenshteinMyers16x8Test, InsertionOperations) {
   auto input = Myers16x8Input{
       .q_wrd = "cat",
       .q_wrd_len = 3,
@@ -35,7 +35,7 @@ TEST(LevenshteinMyersTest, InsertionOperations) {
   EXPECT_EQ(result, expected);
 }
 
-TEST(LevenshteinMyersTest, DeletionOperations) {
+TEST(LevenshteinMyers16x8Test, DeletionOperations) {
   auto input = Myers16x8Input{.q_wrd = "hello",
                               .q_wrd_len = 5,
                               .d_wrds = {"hell", "hllo", "ello", "helo",
@@ -46,7 +46,7 @@ TEST(LevenshteinMyersTest, DeletionOperations) {
   EXPECT_EQ(result, expected);
 }
 
-TEST(LevenshteinMyersTest, EmptyStrings) {
+TEST(LevenshteinMyers16x8Test, EmptyStrings) {
   auto input = Myers16x8Input{.q_wrd = "",
                               .q_wrd_len = 0,
                               .d_wrds = {"", "a", "ab", "abc", "", "", "", ""},
@@ -56,7 +56,7 @@ TEST(LevenshteinMyersTest, EmptyStrings) {
   EXPECT_THAT(result, ::testing::ContainerEq(expected));
 }
 
-TEST(LevenshteinMyersTest, SingleCharStrings) {
+TEST(LevenshteinMyers16x8Test, SingleCharStrings) {
   auto input =
       Myers16x8Input{.q_wrd = "a",
                      .q_wrd_len = 1,
@@ -67,7 +67,7 @@ TEST(LevenshteinMyersTest, SingleCharStrings) {
   EXPECT_EQ(result, expected);
 }
 
-TEST(LevenshteinMyersTest, MaxLengthStrings) {
+TEST(LevenshteinMyers16x8Test, MaxLengthStrings) {
   auto input = Myers16x8Input{
       .q_wrd = "abcdefghijklmnop",
       .q_wrd_len = 16,
@@ -80,7 +80,7 @@ TEST(LevenshteinMyersTest, MaxLengthStrings) {
   EXPECT_EQ(result, expected);
 }
 
-TEST(LevenshteinMyersTest, MaxLengthWithDifferences) {
+TEST(LevenshteinMyers16x8Test, MaxLengthWithDifferences) {
   auto input = Myers16x8Input{
       .q_wrd = "abcdefghijklmnop",
       .q_wrd_len = 16,
@@ -93,7 +93,7 @@ TEST(LevenshteinMyersTest, MaxLengthWithDifferences) {
   EXPECT_EQ(result, expected);
 }
 
-TEST(LevenshteinMyersTest, CompletelyDifferentStrings) {
+TEST(LevenshteinMyers16x8Test, CompletelyDifferentStrings) {
   auto input = Myers16x8Input{
       .q_wrd = "abc",
       .q_wrd_len = 3,
@@ -104,7 +104,7 @@ TEST(LevenshteinMyersTest, CompletelyDifferentStrings) {
   EXPECT_EQ(result, expected);
 }
 
-TEST(LevenshteinMyersTest, TranspositionLikePatterns) {
+TEST(LevenshteinMyers16x8Test, TranspositionLikePatterns) {
   auto input = Myers16x8Input{.q_wrd = "abcd",
                               .q_wrd_len = 4,
                               .d_wrds = {"abdc", "bacd", "acbd", "dcba", "abcd",
@@ -116,7 +116,7 @@ TEST(LevenshteinMyersTest, TranspositionLikePatterns) {
   EXPECT_EQ(result, expected);
 }
 
-TEST(LevenshteinMyersTest, MixedLengths) {
+TEST(LevenshteinMyers16x8Test, MixedLengths) {
   auto input = Myers16x8Input{
       .q_wrd = "test",
       .q_wrd_len = 4,
@@ -127,7 +127,7 @@ TEST(LevenshteinMyersTest, MixedLengths) {
   EXPECT_EQ(result, expected);
 }
 
-TEST(LevenshteinMyersTest, PrefixSuffixDifferences) {
+TEST(LevenshteinMyers16x8Test, PrefixSuffixDifferences) {
   auto input =
       Myers16x8Input{.q_wrd = "middle",
                      .q_wrd_len = 6,
@@ -139,7 +139,7 @@ TEST(LevenshteinMyersTest, PrefixSuffixDifferences) {
   EXPECT_EQ(result, expected);
 }
 
-TEST(LevenshteinMyersTest, RepeatedCharacters) {
+TEST(LevenshteinMyers16x8Test, RepeatedCharacters) {
   auto input = Myers16x8Input{
       .q_wrd = "aaa",
       .q_wrd_len = 3,
@@ -150,7 +150,7 @@ TEST(LevenshteinMyersTest, RepeatedCharacters) {
   EXPECT_EQ(result, expected);
 }
 
-TEST(LevenshteinMyersTest, AllDifferentTargets) {
+TEST(LevenshteinMyers16x8Test, AllDifferentTargets) {
   auto input = Myers16x8Input{.q_wrd = "alpha",
                               .q_wrd_len = 5,
                               .d_wrds = {"alpha", "beta", "gamma", "delta",
@@ -161,7 +161,7 @@ TEST(LevenshteinMyersTest, AllDifferentTargets) {
   EXPECT_EQ(result, expected);
 }
 
-TEST(LevenshteinMyersTest, LengthLimited) {
+TEST(LevenshteinMyers16x8Test, LengthLimited) {
   auto input = Myers16x8Input{.q_wrd = "aaaa",
                               .q_wrd_len = 4,
                               .d_wrds = {"bbbbbbbbbbbbbbbb", "bbbbbbbbbbbbbbbb", "bbbbbbbbbbbbbbbb", "bbbbbbbbbbbbbbbb",
