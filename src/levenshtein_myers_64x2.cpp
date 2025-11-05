@@ -16,13 +16,13 @@ std::array<uint64_t, 2> levenshtein_myers_64x2(const Myers64x2Input &input) {
   uint64_t q_wrd_len = input.q_wrd_len;
   uint64x2_t scores = vdupq_n_u64(q_wrd_len);
 
-  uint64x2_t vp = vdupq_n_u64(0xFFFFFFFF);
+  uint64x2_t vp = vdupq_n_u64(~0ULL);
   uint64x2_t vn = vdupq_n_u64(0);
   uint64x2_t x, y, hn, hp, d0;
 
   // Initialize the bitmap
   for (int i = 0; i < q_wrd_len; i++) {
-    bm[q_wrd[i] - 'a'] |= 1 << i;
+      bm[(unsigned char)q_wrd[i] - 'a'] |= (uint64_t(1) << i);
   }
 
   uint64x2_t d_wrd_lens = vld1q_u64(input.d_wrd_lens);
