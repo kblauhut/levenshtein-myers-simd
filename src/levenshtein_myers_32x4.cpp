@@ -27,9 +27,7 @@ std::array<uint32_t, 4> levenshtein_myers_32x4(const Myers32x4Input &input) {
 
   uint32x4_t q_wrd_len_ls = vshlq_u32(ONE_V, vdupq_n_u32(q_wrd_len - 1));
 
-  int max_d_wrd_len =
-      std::max(std::max(input.d_wrd_lens[0], input.d_wrd_lens[1]),
-               std::max(input.d_wrd_lens[2], input.d_wrd_lens[3]));
+  int max_d_wrd_len =std::ranges::max(input.d_wrd_lens);
 
   for (int i = 0; i < max_d_wrd_len; i++) {
     uint32_t c_bm_0 = bm[input.d_wrds[0][i] - 'a'];
@@ -61,7 +59,7 @@ std::array<uint32_t, 4> levenshtein_myers_32x4(const Myers32x4Input &input) {
                        vandq_u32(vandq_u32(should_not_add, should_sub), ONE_V));
   }
 
-  return std::array<uint32_t, 4>{
-      vgetq_lane_u32(scores, 0), vgetq_lane_u32(scores, 1),
-      vgetq_lane_u32(scores, 2), vgetq_lane_u32(scores, 3)};
+  std::array<uint32_t, 4> out;
+  vst1q_u32(out.data(), scores);
+  return out;
 }

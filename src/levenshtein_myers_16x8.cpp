@@ -27,11 +27,7 @@ std::array<uint16_t, 8> levenshtein_myers_16x8(const Myers16x8Input &input) {
 
   uint16x8_t q_wrd_len_ls = vshlq_u16(ONE_V_16, vdupq_n_u16(q_wrd_len - 1));
 
-  int max_d_wrd_len =
-      std::max(std::max(std::max(input.d_wrd_lens[0], input.d_wrd_lens[1]),
-                        std::max(input.d_wrd_lens[2], input.d_wrd_lens[3])),
-               std::max(std::max(input.d_wrd_lens[4], input.d_wrd_lens[5]),
-                        std::max(input.d_wrd_lens[6], input.d_wrd_lens[7])));
+  int max_d_wrd_len = std::ranges::max(input.d_wrd_lens);
 
   for (int i = 0; i < max_d_wrd_len; i++) {
     uint16_t c_bm_0 = bm[input.d_wrds[0][i] - 'a'];
@@ -68,10 +64,7 @@ std::array<uint16_t, 8> levenshtein_myers_16x8(const Myers16x8Input &input) {
         scores, vandq_u16(vandq_u16(should_not_add, should_sub), ONE_V_16));
   }
 
-  return std::array<uint16_t, 8>{
-      vgetq_lane_u16(scores, 0), vgetq_lane_u16(scores, 1),
-      vgetq_lane_u16(scores, 2), vgetq_lane_u16(scores, 3),
-      vgetq_lane_u16(scores, 4), vgetq_lane_u16(scores, 5),
-      vgetq_lane_u16(scores, 6), vgetq_lane_u16(scores, 7),
-  };
+  std::array<uint16_t, 8> out;
+  vst1q_u16(out.data(), scores);
+  return out;
 }
