@@ -4,6 +4,9 @@ add_library(levenshtein-myers-simd
     levenshtein_myers_16x8.cpp
     levenshtein_myers_32x4.cpp
     levenshtein_myers_64x2.cpp
+    levenshtein_myers_32x1.cpp
+    levenshtein_myers_64x1.cpp
+    levenshtein_myers_128x1.cpp
 )
 
 # Include directories

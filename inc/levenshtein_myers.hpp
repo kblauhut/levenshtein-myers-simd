@@ -32,11 +32,21 @@ struct Myers64x2Input {
   uint64_t d_wrd_lens[2];
 };
 
+// Multiple strings at once
 std::array<uint8_t, 16> levenshtein_myers_8x16(const Myers8x16Input &input);
 std::array<uint16_t, 8> levenshtein_myers_16x8(const Myers16x8Input &input);
 std::array<uint32_t, 4> levenshtein_myers_32x4(const Myers32x4Input &input);
 std::array<uint64_t, 2> levenshtein_myers_64x2(const Myers64x2Input &input);
+
+
+// Optimized methods for strings of length 32, 64, and 128
+uint32_t levenshtein_myers_32x1(const char *q_wrd, int q_wrd_len, const char *d_wrd,
+                       int d_wrd_len);
+uint32_t levenshtein_myers_64x1(const char *q_wrd, int q_wrd_len, const char *d_wrd,
+                       int d_wrd_len);
 uint32_t levenshtein_myers_128x1(const char *q_wrd, int q_wrd_len, const char *d_wrd,
                        int d_wrd_len);
+
+// Any string length
 uint32_t levenshtein_myers_anyx1(const char *q_wrd, int q_wrd_len, const char *d_wrd,
                        int d_wrd_len);

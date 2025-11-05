@@ -1,6 +1,5 @@
 #include "levenshtein_myers.hpp"
 #include <arm_neon.h>
-#include <cstdint>
 
 static const uint8x16_t NULL_V_8 = vdupq_n_u8(0);
 static const uint8x16_t ONE_V_8 = vdupq_n_u8(1);
