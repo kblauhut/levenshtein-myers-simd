@@ -39,6 +39,38 @@ static std::string rand_string(std::mt19937 &rng, int max_len = 16) {
   return s;
 }
 
+TEST(LevenshteinMyers32x1Fuzz, RandomizedCompareAgainstReference) {
+  std::mt19937 rng(1337);
+
+  for (int iter = 0; iter < 2000000; ++iter) {
+    auto q = rand_string(rng, 32);
+    auto d = rand_string(rng, 32);
+
+    auto myers = levenshtein_myers_32x1(
+        q.c_str(), q.size(), d.c_str(), d.size()
+    );
+    uint64_t ref =  levenshtein_reference(q.c_str(), q.size(), d.c_str(), d.size());
+
+    EXPECT_EQ(myers, ref) << "Mismatch q=" << q << " a=" << d;
+  }
+}
+
+TEST(LevenshteinMyers64x1Fuzz, RandomizedCompareAgainstReference) {
+  std::mt19937 rng(1337);
+
+  for (int iter = 0; iter < 2000000; ++iter) {
+    auto q = rand_string(rng, 64);
+    auto d = rand_string(rng, 64);
+
+    auto myers = levenshtein_myers_64x1(
+        q.c_str(), q.size(), d.c_str(), d.size()
+    );
+    uint64_t ref =  levenshtein_reference(q.c_str(), q.size(), d.c_str(), d.size());
+
+    EXPECT_EQ(myers, ref) << "Mismatch q=" << q << " a=" << d;
+  }
+}
+
 TEST(LevenshteinMyers64x2Fuzz, RandomizedCompareAgainstReference) {
   std::mt19937 rng(1337);
 

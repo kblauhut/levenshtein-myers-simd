@@ -10,10 +10,10 @@ uint32_t levenshtein_myers_64x1(const char *q_wrd, int q_wrd_len,
 
   // Initialize the bitmap
   for (int i = 0; i < q_wrd_len; i++) {
-    bm[q_wrd[i] - 'a'] |= 1 << i;
+    bm[q_wrd[i] - 'a'] |= (uint64_t(1) << i);
   }
 
-  uint64_t vp = 0xFFFFFFFF;
+  uint64_t vp = ~0ULL;
   uint64_t vn = 0;
   uint32_t score = q_wrd_len;
 
@@ -28,9 +28,9 @@ uint32_t levenshtein_myers_64x1(const char *q_wrd, int q_wrd_len,
     vn = y & d0;
     vp = (hn << 1) | ~(y | d0);
 
-    if ((hp & (1 << (q_wrd_len - 1))) != 0) {
+    if ((hp & (uint64_t(1) << (q_wrd_len - 1))) != 0) {
       score++;
-    } else if ((hn & (1 << (q_wrd_len - 1))) != 0) {
+    } else if ((hn & (uint64_t(1) << (q_wrd_len - 1))) != 0) {
       score--;
     }
   }
