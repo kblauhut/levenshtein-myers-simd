@@ -71,6 +71,22 @@ TEST(LevenshteinMyers64x1Fuzz, RandomizedCompareAgainstReference) {
   }
 }
 
+TEST(LevenshteinMyersAnyx1Fuzz, RandomizedCompareAgainstReference) {
+  std::mt19937 rng(1337);
+
+  for (int iter = 0; iter < 10000; ++iter) {
+    auto q = rand_string(rng, 1024);
+    auto d = rand_string(rng, 1024);
+
+    auto myers = levenshtein_myers_anyx1(
+        q.c_str(), q.size(), d.c_str(), d.size()
+    );
+    uint64_t ref =  levenshtein_reference(q.c_str(), q.size(), d.c_str(), d.size());
+
+    EXPECT_EQ(myers, ref) << "Mismatch q=" << q << " a=" << d;
+  }
+}
+
 TEST(LevenshteinMyers64x2Fuzz, RandomizedCompareAgainstReference) {
   std::mt19937 rng(1337);
 
