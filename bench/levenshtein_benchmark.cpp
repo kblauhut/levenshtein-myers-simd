@@ -21,6 +21,15 @@ static std::string random_string(std::mt19937 &rng, int min_len, int max_len) {
   return s;
 }
 
+static std::string random_string_exact(std::mt19937 &rng, int len) {
+  std::uniform_int_distribution<int> char_dist('a', 'z');
+  std::string s;
+  s.reserve(len);
+  for (int i = 0; i < len; ++i)
+    s += static_cast<char>(char_dist(rng));
+  return s;
+}
+
 // ---------------------------------------------------------------------------
 // 8x16 (query ≤ 8 chars, 16 database words)
 // ---------------------------------------------------------------------------
@@ -448,5 +457,112 @@ static void BM_MyersAnyx1_Identical(benchmark::State &state) {
   }
 }
 BENCHMARK(BM_MyersAnyx1_Identical);
+
+// ---------------------------------------------------------------------------
+// Fixed-length cross-method comparison
+// All strings are exactly `state.range(0)` characters so results are
+// directly comparable across methods at the same string length.
+// Divide the reported time by the batch size to get ns/comparison.
+// ---------------------------------------------------------------------------
+
+static void BM_Myers8x16_FixedLen(benchmark::State &state) {
+  int len = state.range(0);
+  auto rng = make_rng();
+  constexpr int N = 100;
+  std::vector<std::string> queries(N);
+  std::vector<std::array<std::string, 16>> db(N);
+  for (int i = 0; i < N; ++i) {
+    queries[i] = random_string_exact(rng, len);
+    for (int k = 0; k < 16; ++k) db[i][k] = random_string_exact(rng, len);
+  }
+  int idx = 0;
+  for (auto _ : state) {
+    Myers8x16Input input;
+    input.q_wrd = queries[idx].c_str();
+    input.q_wrd_len = len;
+    for (int i = 0; i < 16; ++i) {
+      input.d_wrds[i] = db[idx][i].c_str();
+      input.d_wrd_lens[i] = len;
+    }
+    benchmark::DoNotOptimize(levenshtein_myers_8x16(input));
+    idx = (idx + 1) % N;
+  }
+}
+BENCHMARK(BM_Myers8x16_FixedLen)->Arg(8);
+
+static void BM_Myers16x8_FixedLen(benchmark::State &state) {
+  int len = state.range(0);
+  auto rng = make_rng();
+  constexpr int N = 100;
+  std::vector<std::string> queries(N);
+  std::vector<std::array<std::string, 8>> db(N);
+  for (int i = 0; i < N; ++i) {
+    queries[i] = random_string_exact(rng, len);
+    for (int k = 0; k < 8; ++k) db[i][k] = random_string_exact(rng, len);
+  }
+  int idx = 0;
+  for (auto _ : state) {
+    Myers16x8Input input;
+    input.q_wrd = queries[idx].c_str();
+    input.q_wrd_len = len;
+    for (int i = 0; i < 8; ++i) {
+      input.d_wrds[i] = db[idx][i].c_str();
+      input.d_wrd_lens[i] = len;
+    }
+    benchmark::DoNotOptimize(levenshtein_myers_16x8(input));
+    idx = (idx + 1) % N;
+  }
+}
+BENCHMARK(BM_Myers16x8_FixedLen)->Arg(8)->Arg(16);
+
+static void BM_Myers32x4_FixedLen(benchmark::State &state) {
+  int len = state.range(0);
+  auto rng = make_rng();
+  constexpr int N = 100;
+  std::vector<std::string> queries(N);
+  std::vector<std::array<std::string, 4>> db(N);
+  for (int i = 0; i < N; ++i) {
+    queries[i] = random_string_exact(rng, len);
+    for (int k = 0; k < 4; ++k) db[i][k] = random_string_exact(rng, len);
+  }
+  int idx = 0;
+  for (auto _ : state) {
+    Myers32x4Input input;
+    input.q_wrd = queries[idx].c_str();
+    input.q_wrd_len = len;
+    for (int i = 0; i < 4; ++i) {
+      input.d_wrds[i] = db[idx][i].c_str();
+      input.d_wrd_lens[i] = len;
+    }
+    benchmark::DoNotOptimize(levenshtein_myers_32x4(input));
+    idx = (idx + 1) % N;
+  }
+}
+BENCHMARK(BM_Myers32x4_FixedLen)->Arg(8)->Arg(16)->Arg(32);
+
+static void BM_Myers64x2_FixedLen(benchmark::State &state) {
+  int len = state.range(0);
+  auto rng = make_rng();
+  constexpr int N = 100;
+  std::vector<std::string> queries(N);
+  std::vector<std::array<std::string, 2>> db(N);
+  for (int i = 0; i < N; ++i) {
+    queries[i] = random_string_exact(rng, len);
+    for (int k = 0; k < 2; ++k) db[i][k] = random_string_exact(rng, len);
+  }
+  int idx = 0;
+  for (auto _ : state) {
+    Myers64x2Input input;
+    input.q_wrd = queries[idx].c_str();
+    input.q_wrd_len = len;
+    for (int i = 0; i < 2; ++i) {
+      input.d_wrds[i] = db[idx][i].c_str();
+      input.d_wrd_lens[i] = len;
+    }
+    benchmark::DoNotOptimize(levenshtein_myers_64x2(input));
+    idx = (idx + 1) % N;
+  }
+}
+BENCHMARK(BM_Myers64x2_FixedLen)->Arg(8)->Arg(16)->Arg(32)->Arg(64);
 
 BENCHMARK_MAIN();

@@ -4,7 +4,7 @@ SIMD-accelerated Levenshtein distance using the Myers bit-parallel algorithm, ta
 
 ## Algorithm
 
-All methods implement [Myers' bit-parallel algorithm](https://dl.acm.org/doi/10.1145/316542.316550). The core idea is to represent the DP recurrence as bitwise operations on bitvectors, so an entire column of the DP matrix is computed with a handful of integer instructions. This makes it significantly faster than the classical O(mn) DP approach.
+All methods implement [Myers' bit-parallel algorithm](https://dl.acm.org/doi/10.1145/316542.316550).
 
 The naming convention `NxM` encodes two parameters:
 - **N** — bit width of the bitvector used for the query, which equals the maximum supported query length in characters.
@@ -60,41 +60,37 @@ uint32_t dist = levenshtein_myers_anyx1(long_query, q_len, long_target, t_len);
 
 ## Benchmarks
 
-Measured on a MacBook Pro M1 Max. Benchmark strings use lowercase a–z.
+Measured on a MacBook Pro M1 Max. All strings are random lowercase a–z of exactly the given length.
 
-### SIMD batch variants
+### SIMD batch variants — ns per comparison
 
-The batch variants are best compared by their **per-comparison throughput** (total call time divided by batch size), since each call processes multiple strings. The random benchmark uses mixed-length strings uniformly sampled up to the method's maximum; the max-length benchmark uses strings of exactly the maximum length.
+Each call processes a batch of strings simultaneously. The table shows **ns per individual comparison** (call time ÷ batch size). Empty cells mean the method does not support that string length.
 
-| Method | Max len | Batch | Random call (ns) | ns/comparison | Max-len call (ns) | ns/comparison |
-|---|---|---|---|---|---|---|
-| `8x16`  |  8 | 16 |  53 |  3.3 |  52 |  3.3 |
-| `16x8`  | 16 |  8 |  83 | 10.4 |  91 | 11.4 |
-| `32x4`  | 32 |  4 | 160 | 40.0 | 208 | 52.0 |
-| `64x2`  | 64 |  2 | 282 | 141  | 478 | 239  |
+| String length | `8x16` (batch 16) | `16x8` (batch 8) | `32x4` (batch 4) | `64x2` (batch 2) |
+|---|---|---|---|---|
+|  8 chars |  3.3 |  5.3 |  9.0 | 17.2 |
+| 16 chars |    — | 11.6 | 22.0 | 43.6 |
+| 32 chars |    — |    — | 51.5 |  103 |
+| 64 chars |    — |    — |    — |  224 |
 
-`8x16` achieves the best throughput because the 8-bit bitvector fits 16 lanes in a 128-bit NEON register. As the bitvector widens to accommodate longer strings, fewer lanes fit and throughput falls. Use the narrowest variant that covers your string lengths.
+At any given string length, the method with the most lanes is always fastest per comparison. The trade-off is that wider NEON elements (needed for longer strings) leave fewer lanes available, which is why `8x16` is the fastest option for short strings.
 
 ### Scalar single-pair variants
 
-| Method | Max len | Random (ns) | Max-len (ns) |
+| Method | Max length | Random (ns) | Max-length (ns) |
 |---|---|---|---|
-| `32x1` | 32 |  71 | 137 |
-| `64x1` | 64 | 147 | 330 |
-
-The scalar variants are slower than the SIMD batch methods on a per-comparison basis but avoid the overhead of assembling a batch.
+| `32x1` | 32 |  71 | 136 |
+| `64x1` | 64 | 147 | 329 |
 
 ### Arbitrary-length variant (`anyx1`)
 
-Runtime scales roughly quadratically with string length due to the O(mn/w) nature of Myers' algorithm with multi-word bitvectors (where w = 8 for the byte-level implementation here).
-
 | String length | Time (ns) |
 |---|---|
-|  32 |     1,722 |
-|  64 |     4,455 |
-| 128 |    12,874 |
-| 256 |    41,475 |
-| 512 |   103,104 |
+|  32 |     1,716 |
+|  64 |     4,514 |
+| 128 |    12,840 |
+| 256 |    41,183 |
+| 512 |   102,208 |
 
 ## Build
 
